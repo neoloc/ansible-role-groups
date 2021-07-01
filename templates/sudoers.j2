@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+# Do not change file directly, changes will be overwritten.
+#
+{% if item.sudo_content is defined %}
+{% for content in item.sudo_content %}
+%{{ item.name }} {{ content }}
+{% endfor %}
+{% endif %}
