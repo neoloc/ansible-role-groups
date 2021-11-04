@@ -2,38 +2,11 @@
 # tasks file for role
 #
 
-- name: Create groups
-  group:
-    name: "{{ item.name }}"
-    state: present
-    gid: "{{ item.gid }}"
-  with_items: "{{ groups.create }}"
-  tags: [ groups ]
+- include_tasks: groups-all.yml
+  when: groups_all is defined
 
-- name: Install sudo package
-  package:
-    name: sudo
-    state: present
-  when: groups.sudo.enabled is defined and groups.sudo.enabled == true
-  tags: [ groups ]
+- include_tasks: groups-group.yml
+  when: groups_group is defined
 
-- name: Configure group sudo access
-  template:
-    src: templates/sudoers.j2
-    dest: "/etc/sudoers.d/{{ item.name }}"
-    owner: root
-    group: root
-    mode: 0440
-    validate: /usr/sbin/visudo -cf %s
-  with_items: "{{ groups.create }}"
-  when: groups.sudo.enabled is defined and groups.sudo.enabled == true
-  tags: [ groups ]
-
-- name: Remove groups
-  group:
-    name: "{{ item }}"
-    state: absent
-  with_items: "{{ groups.remove }}"
-  when: groups.remove is defined
-  tags: [ groups ]
-
+- include_tasks: groups-host.yml
+  when: groups_host is defined

@@ -1,0 +1,35 @@
+---
+- name: GROUP - Create groups
+  group:
+    name: "{{ item.name }}"
+    state: present
+    gid: "{{ item.gid }}"
+  with_items: "{{ groups_group.create }}"
+  tags: [ groups ]
+
+- name: GROUP - Instgroup sudo package
+  package:
+    name: sudo
+    state: present
+  when: groups_group.sudo.enabled is defined and groups_group.sudo.enabled == true
+  tags: [ groups ]
+
+- name: GROUP - Configure group sudo access
+  template:
+    src: templates/sudoers.j2
+    dest: "/etc/sudoers.d/{{ item.name }}"
+    owner: root
+    group: root
+    mode: 0440
+    validate: /usr/sbin/visudo -cf %s
+  with_items: "{{ groups_group.create }}"
+  when: groups_group.sudo.enabled is defined and groups_group.sudo.enabled == true
+  tags: [ groups ]
+
+- name: GROUP - Remove groups
+  group:
+    name: "{{ item }}"
+    state: absent
+  with_items: "{{ groups_group.remove }}"
+  when: groups_group.remove is defined
+  tags: [ groups ]

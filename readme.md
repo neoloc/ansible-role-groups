@@ -18,18 +18,83 @@ An example list of all variables for this role should go here, including any var
 
 | Variable                | Required | Default | Choices                   | Comments                                 |
 |-------------------------|----------|---------|---------------------------|------------------------------------------|
-| groups.create.name      | yes      | N/A     | string                    | the group name                           |
-| groups.create.gid       | yes      | N/A     | integer                   | the group id                             |
-| groups.create.password_login | yes | N/A     | yes, no                   | the groups ability to login via ssh with as password |
-| groups.create.sudo_content | yes   | N/A     | list of strings           | content to add to /etc/sudoers/groupname using a template |
-| groups.remove           | no       | N/A     | list of strings           | the groups to remove                     |
-| groups.sudo.enabled     | no       | N/A     | true, false               | install and configure sudo for groups    |
+| groups_all.create.name      | yes      | N/A     | string                    | the group name                           |
+| groups_all.create.gid       | yes      | N/A     | integer                   | the group id                             |
+| groups_all.create.password_login | yes | N/A     | yes, no                   | the groups ability to login via ssh with as password |
+| groups_all.create.sudo_content | yes   | N/A     | list of strings           | content to add to /etc/sudoers/groupname using a template |
+| groups_all.remove           | no       | N/A     | list of strings           | the groups to remove                     |
+| groups_all.sudo.enabled     | no       | N/A     | true, false               | install and configure sudo for groups    |
+| groups_group.create.name      | yes      | N/A     | string                    | the group name                           |
+| groups_group.create.gid       | yes      | N/A     | integer                   | the group id                             |
+| groups_group.create.password_login | yes | N/A     | yes, no                   | the groups ability to login via ssh with as password |
+| groups_group.create.sudo_content | yes   | N/A     | list of strings           | content to add to /etc/sudoers/groupname using a template |
+| groups_group.remove           | no       | N/A     | list of strings           | the groups to remove                     |
+| groups_group.sudo.enabled     | no       | N/A     | true, false               | install and configure sudo for groups    |
+| groups_host.create.name      | yes      | N/A     | string                    | the group name                           |
+| groups_host.create.gid       | yes      | N/A     | integer                   | the group id                             |
+| groups_host.create.password_login | yes | N/A     | yes, no                   | the groups ability to login via ssh with as password |
+| groups_host.create.sudo_content | yes   | N/A     | list of strings           | content to add to /etc/sudoers/groupname using a template |
+| groups_host.remove           | no       | N/A     | list of strings           | the groups to remove                     |
+| groups_host.sudo.enabled     | no       | N/A     | true, false               | install and configure sudo for groups    |
+
+
+Role Variables Examples
+-----------------------
 
 ```yaml
-groups:
+# in group_vars/all.yml
+groups_all:
   create:
     - name: admins
       gid: 3001
+      password_login: no
+      sudo_content:
+        - ALL=(ALL) NOPASSWD:ALL
+    - name: operators
+      gid: 3002
+      password_login: no
+      sudo_content:
+        - ALL = (root) NOPASSWD: /usr/local/bin/custom-tool
+        - ALL = (root) NOPASSWD: /usr/sbin/something with-specific-arguments
+        - ALL = (root) NOPASSWD: /usr/local/bin/other-thing
+  remove:
+    - group1
+    - group2
+    - othergroup
+  sudo:
+    enabled: true
+```
+
+```yaml
+# in group_vars/group_name.yml
+groups_group:
+  create:
+    - name: group_admins
+      gid: 4001
+      password_login: no
+      sudo_content:
+        - ALL=(ALL) NOPASSWD:ALL
+    - name: operators
+      gid: 3002
+      password_login: no
+      sudo_content:
+        - ALL = (root) NOPASSWD: /usr/local/bin/custom-tool
+        - ALL = (root) NOPASSWD: /usr/sbin/something with-specific-arguments
+        - ALL = (root) NOPASSWD: /usr/local/bin/other-thing
+  remove:
+    - group1
+    - group2
+    - othergroup
+  sudo:
+    enabled: true
+```
+
+```yaml
+# in host_vars/hostname.yml
+groups_host:
+  create:
+    - name: host_admins
+      gid: 2001
       password_login: no
       sudo_content:
         - ALL=(ALL) NOPASSWD:ALL
